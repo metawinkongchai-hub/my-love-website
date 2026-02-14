@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Love Surprise</title>
+
+<!-- GOOGLE FONT เพิ่ม -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dongle&family=Kanit:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --pink1:#ffd6e7;
+    --pink2:#ffb6d9;
+    --main:#ff4d88;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Kanit',sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(180deg,var(--pink1),var(--pink2));
+    overflow:hidden;
+}
+
+/* Floating Hearts */
+.heart{
+    position:fixed;
+    pointer-events:none;
+    z-index:9999;
+    animation:floatUp linear forwards;
+}
+
+@keyframes floatUp{
+    0%{transform:translateY(110vh);opacity:1;}
+    100%{transform:translateY(-120vh);opacity:0;}
+}
+
+/* Splash */
+.splash{
+    text-align:center;
+    cursor:pointer;
+}
+
+.lock-img{
+    width:600px;
+    animation:blink 1.5s infinite, glow 2s infinite alternate;
+    transition:0.3s;
+}
+
+@keyframes blink{
+    0%,100%{opacity:1;}
+    50%{opacity:0.6;}
+}
+
+@keyframes glow{
+    from{filter:drop-shadow(0 0 5px #ff99bb);}
+    to{filter:drop-shadow(0 0 25px #ff4d88);}
+}
+
+.lock-img:hover{
+    transform:scale(1.15);
+}
+
+.lock-img.active{
+    animation:clickZoom .5s forwards;
+}
+
+@keyframes clickZoom{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.4);}
+    100%{transform:scale(0);opacity:0;}
+}
+
+/* Card */
+.card{
+    display:none;
+    width:360px;
+    background:white;
+    border-radius:30px;
+    padding:35px 30px;
+    text-align:center;
+    box-shadow:20px 30px 70px rgba(255,77,109,.25);
+    z-index:10;
+}
+
+.card h2{
+    font-family:'Dongle',sans-serif;
+    font-size:48px;
+    color:#d6336c;
+}
+
+.date-placeholder{
+    background:#ffe6f0;
+    border-radius:18px;
+    padding:10px;
+    font-size:18px;
+    color:#d6336c;
+    margin:12px 0 18px 0;
+}
+
+.display{
+    width:100%;
+    height:50px;
+    margin-bottom:25px;
+    border-radius:18px;
+    border:none;
+    text-align:center;
+    font-size:1.2rem;
+    background:#fff0f6;
+}
+
+.display.error{
+    background:#ffd6d6;
+    color:#d8000c;
+    animation:shake 0.4s;
+}
+
+.display.success{
+    background:#d4ffd6;
+    color:#008a1e;
+}
+
+@keyframes shake{
+    0%{transform:translateX(0);}
+    25%{transform:translateX(-5px);}
+    50%{transform:translateX(5px);}
+    75%{transform:translateX(-5px);}
+    100%{transform:translateX(0);}
+}
+@keyframes bounceWrong{
+    0%{transform:scale(1);}
+    20%{transform:scale(1.05);}
+    40%{transform:scale(0.95);}
+    60%{transform:scale(1.03);}
+    80%{transform:scale(0.97);}
+    100%{transform:scale(1);}
+}
+@keyframes successTransition{
+    0%{
+        transform:scale(1);
+        opacity:1;
+    }
+    40%{
+        transform:scale(1.1);
+    }
+    100%{
+        transform:scale(0.8) translateY(-40px);
+        opacity:0;
+    }
+}
+
+.card.success-animate{
+    animation:successTransition 0.8s ease forwards;
+}
+
+/* fade in หน้าใหม่ */
+@keyframes fadeInLove{
+    from{
+        opacity:0;
+        transform:scale(1.05);
+    }
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+.love-page.show{
+    display:flex;
+    animation:fadeInLove 0.8s ease forwards;
+}
+
+.card.wrong{
+    animation:bounceWrong 0.4s ease;
+}
+
+/* เอฟเฟกต์หัวใจตอนรหัสถูก */
+.success-heart{
+    position:fixed;
+    font-size:30px;
+    pointer-events:none;
+    animation:explode 1s ease-out forwards;
+    z-index:99999;
+}
+
+@keyframes explode{
+    0%{transform:translate(0,0) scale(0.5);opacity:1;}
+    100%{transform:translate(var(--x), var(--y)) scale(1.5);opacity:0;}
+}
+
+/* ===== ปรับปุ่มให้กลมฟูแบบในภาพ ===== */
+.keypad{
+    display:grid;
+    grid-template-columns:repeat(3,80px);
+    justify-content:center;
+    gap:20px;
+}
+
+.keypad button{
+    width:80px;
+    height:80px;
+    border:none;
+    border-radius:50%;
+    font-size:1.2rem;
+    background:#ffffff;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    box-shadow:
+        10px 10px 22px rgba(0,0,0,0.08),
+        -10px -10px 22px rgba(255,255,255,0.95);
+
+    cursor:pointer;
+    transition:all .2s ease;
+}
+
+.keypad button:active{
+    transform:scale(.88);
+    box-shadow:
+        inset 5px 5px 15px rgba(0,0,0,0.08),
+        inset -5px -5px 15px rgba(255,255,255,0.9);
+}
+
+.heart-btn{
+    background:var(--main);
+    color:white;
+    box-shadow:0 12px 30px rgba(255,77,109,.45);
+}
+
+/* ===== LOVE PAGE ===== */
+.love-page{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#f9dbe3;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    z-index:20;
+}
+
+.love-page img{
+    width:90%;
+    max-width:600px;
+    height:auto;
+    border-radius:20px;
+    box-shadow:0 15px 40px rgba(255, 110, 110, 0.3);
+}
+
+.top-bar{
+    position:absolute;
+    top:25px;
+
+    background:rgba(255,255,255,0.75);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+
+    padding:18px 40px;
+    border-radius:60px;
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    box-shadow:
+        0 10px 30px rgba(255,77,136,0.25),
+        inset 0 0 10px rgba(255,255,255,0.6);
+
+    border:1px solid rgba(255,255,255,0.6);
+
+    transition:all .3s ease;
+}
+.top-bar span{
+    font-size:18px;
+    font-weight:500;
+    color:#d6336c;
+    letter-spacing:0.5px;
+}
+
+
+.play-btn{
+    background:var(--main);
+    border:none;
+    color:white;
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    cursor:pointer;
+}
+
+.download-btn{
+    margin-top:25px;
+    background:var(--main);
+    color:white;
+    border:none;
+    padding:15px 35px;
+    font-size:20px;
+    border-radius:30px;
+    cursor:pointer;
+    font-family:'Noto Sans KR','Kanit',sans-serif; /* บังคับใช้ฟอนต์เกาหลี */
+}
+.top-img{
+    width:300px;
+    position:relative;
+    top:-25px; /* ปรับตัวเลขได้ */
+}
+</style>
+</head>
+
+<body>
+
+<div class="splash" id="splash">
+    <img src="key-3.png" class="lock-img" id="heartImg">
+</div>
+
+<div class="card" id="card">
+    <img src="ll0.png" alt="" width="350px" class="top-img" >
+    <input class="display" id="display" readonly>
+
+    <div class="keypad">
+        <button onclick="press(1)">1</button>
+        <button onclick="press(2)">2</button>
+        <button onclick="press(3)">3</button>
+        <button onclick="press(4)">4</button>
+        <button onclick="press(5)">5</button>
+        <button onclick="press(6)">6</button>
+        <button onclick="press(7)">7</button>
+        <button onclick="press(8)">8</button>
+        <button onclick="press(9)">9</button>
+        <button onclick="clearDisplay()"><h5>X</h5></button>
+        <button onclick="press(0)">0</button>
+        <button class="heart-btn" onclick="checkCode()"><img src="lo-0.png" alt="" width="60px"></button>
+    </div>
+</div>
+
+<div class="love-page" id="lovePage">
+    <div class="top-bar">
+        <button class="play-btn" onclick="toggleMusic()" id="playBtn">▶</button>
+        <span>Promise 🎵</span>
+    </div>
+
+    <img src="love.png">
+    <button class="download-btn" onclick="downloadImage()"><h4>사진 다운로드</h4></button>
+
+    <audio id="bgMusic" src="mu.mp3" loop></audio>
+</div>
+
+<script>
+const correctCode = "22012009";
+const display = document.getElementById("display");
+const splash = document.getElementById("splash");
+const card = document.getElementById("card");
+const heartImg = document.getElementById("heartImg");
+const lovePage = document.getElementById("lovePage");
+const music = document.getElementById("bgMusic");
+const playBtn = document.getElementById("playBtn");
+
+heartImg.addEventListener("click", ()=>{
+    heartImg.classList.add("active");
+
+    // ✅ เล่นเพลงทันทีหลังคลิก (browser จะยอมให้เล่น)
+    music.play().catch(()=>{
+        console.log("Autoplay blocked");
+    });
+    playBtn.innerHTML="⏸";
+
+    setTimeout(()=>{
+        splash.style.display="none";
+        card.style.display="block";
+    },500);
+});
+
+
+function press(num){
+    display.value += num;
+}
+
+function clearDisplay(){
+    display.value = display.value.slice(0,-1);
+}
+
+function checkCode(){
+   if(display.value === correctCode){
+
+     display.value = "Happy valentine 💖";
+    display.classList.add("success");
+
+    heartExplosion();
+
+    card.classList.add("success-animate"); // ใส่อนิเมชั่น
+
+    setTimeout(()=>{
+        card.style.display="none";
+        lovePage.classList.add("show");
+    },800);
+
+    }else{
+       display.value = "NO 💔";
+    display.classList.add("error");
+
+    card.classList.add("wrong"); // ให้การ์ดเด้ง
+
+    setTimeout(()=>{
+        display.value="";
+        display.classList.remove("error");
+        card.classList.remove("wrong"); // เอา class ออก
+    },600);
+
+    }
+}
+
+function toggleMusic(){
+    if(music.paused){
+        music.play();
+        playBtn.innerHTML="⏸";
+    }else{
+        music.pause();
+        playBtn.innerHTML="▶";
+    }
+}
+
+function downloadImage(){
+    const link=document.createElement("a");
+    link.href="love.png";
+    link.download="love.png";
+    link.click();
+}
+
+function createHeart(){
+    const heart=document.createElement("img");
+    const heartImages=["lo-0.png","lo-1.png","lo-2.png","lo-3.png"];
+    heart.src=heartImages[Math.floor(Math.random()*heartImages.length)];
+    heart.classList.add("heart");
+    heart.style.left=Math.random()*100+"vw";
+    heart.style.width=(Math.random()*80+50)+"px";
+    heart.style.animationDuration=(Math.random()*5+6)+"s";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),8000);
+}
+
+function heartExplosion(){
+    for(let i=0;i<20;i++){
+        const heart=document.createElement("div");
+        heart.innerHTML="💖";
+        heart.classList.add("success-heart");
+
+        heart.style.left="50%";
+        heart.style.top="50%";
+
+        const x=(Math.random()-0.5)*400+"px";
+        const y=(Math.random()-0.5)*400+"px";
+
+        heart.style.setProperty("--x",x);
+        heart.style.setProperty("--y",y);
+
+        document.body.appendChild(heart);
+
+        setTimeout(()=>heart.remove(),1000);
+    }
+}
+
+setInterval(createHeart,150);
+</script>
+
+</body>
+</html>
